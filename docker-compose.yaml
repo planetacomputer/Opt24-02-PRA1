@@ -1,0 +1,91 @@
+version: '3.8'
+
+services:
+  cockroachdb-node1:
+    image: cockroachdb/cockroach:v24.3.6
+    command: start --insecure --join=cockroachdb-node1,cockroachdb-node2,cockroachdb-node3,cockroachdb-node4,cockroachdb-node5,cockroachdb-node6,cockroachdb-node7 --locality=region=us-east,zone=us-east-1
+    container_name: cockroachdb-node1
+    ports:
+      - "26257:26257"
+      - "8080:8080"
+    volumes:
+      - cockroach-data-node1:/cockroach/cockroach-data
+    networks:
+      - cockroachnet
+
+  cockroachdb-node2:
+    image: cockroachdb/cockroach:v24.3.6
+    command: start --insecure --join=cockroachdb-node1,cockroachdb-node2,cockroachdb-node3,cockroachdb-node4,cockroachdb-node5,cockroachdb-node6,cockroachdb-node7 --locality=region=us-east,zone=us-east-2
+    container_name: cockroachdb-node2
+    volumes:
+      - cockroach-data-node2:/cockroach/cockroach-data
+    networks:
+      - cockroachnet
+
+  cockroachdb-node3:
+    image: cockroachdb/cockroach:v24.3.6
+    command: start --insecure --join=cockroachdb-node1,cockroachdb-node2,cockroachdb-node3,cockroachdb-node4,cockroachdb-node5,cockroachdb-node6,cockroachdb-node7 --locality=region=us-east,zone=us-east-3
+    container_name: cockroachdb-node3
+    volumes:
+      - cockroach-data-node3:/cockroach/cockroach-data
+    networks:
+      - cockroachnet
+
+  cockroachdb-node4:
+    image: cockroachdb/cockroach:v24.3.6
+    command: start --insecure --join=cockroachdb-node1,cockroachdb-node2,cockroachdb-node3,cockroachdb-node4,cockroachdb-node5,cockroachdb-node6,cockroachdb-node7 --locality=region=us-west,zone=us-west-1
+    container_name: cockroachdb-node4
+    volumes:
+      - cockroach-data-node4:/cockroach/cockroach-data
+    networks:
+      - cockroachnet
+
+  cockroachdb-node5:
+    image: cockroachdb/cockroach:v24.3.6
+    command: start --insecure --join=cockroachdb-node1,cockroachdb-node2,cockroachdb-node3,cockroachdb-node4,cockroachdb-node5,cockroachdb-node6,cockroachdb-node7 --locality=region=us-west,zone=us-west-2
+    container_name: cockroachdb-node5
+    volumes:
+      - cockroach-data-node5:/cockroach/cockroach-data
+    networks:
+      - cockroachnet
+
+  cockroachdb-node6:
+    image: cockroachdb/cockroach:v24.3.6
+    command: start --insecure --join=cockroachdb-node1,cockroachdb-node2,cockroachdb-node3,cockroachdb-node4,cockroachdb-node5,cockroachdb-node6,cockroachdb-node7 --locality=region=us-west,zone=us-west-3
+    container_name: cockroachdb-node6
+    volumes:
+      - cockroach-data-node6:/cockroach/cockroach-data
+    networks:
+      - cockroachnet
+ 
+  cockroachdb-node7:
+    image: cockroachdb/cockroach:v24.3.6
+    command: start --insecure --join=cockroachdb-node1,cockroachdb-node2,cockroachdb-node3,cockroachdb-node4,cockroachdb-node5,cockroachdb-node6,cockroachdb-node7  --locality=region=us-east,zone=us-east-4
+    container_name: cockroachdb-node7
+    volumes:
+      - cockroach-data-node7:/cockroach/cockroach-data
+    networks:
+      - cockroachnet
+
+
+  init:
+    image: cockroachdb/cockroach:v24.3.6
+    depends_on:
+      - cockroachdb-node1
+    entrypoint: ["/bin/sh", "-c", "sleep 35 && cockroach init --host=cockroachdb-node1 --insecure && cockroach sql --insecure --host=cockroachdb-node1 < /docker-entrypoint-initdb.d/init-ex1.sql"]
+    volumes:
+      - ./init-ex1.sql:/docker-entrypoint-initdb.d/init-ex1.sql
+    networks:
+      - cockroachnet
+volumes:
+  cockroach-data-node1:
+  cockroach-data-node2:
+  cockroach-data-node3:
+  cockroach-data-node4:
+  cockroach-data-node5:
+  cockroach-data-node6:
+  cockroach-data-node7:
+
+networks:
+  cockroachnet:
+    driver: bridge

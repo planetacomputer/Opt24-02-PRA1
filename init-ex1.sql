@@ -1,10 +1,10 @@
 
 drop database if exists dad cascade;
 create database dad;
-use dad;
 
-alter database dad primary region "us-east";
+alter database dad SET primary region "us-east";
 alter database dad add region "us-west";
+use dad;
 
 create table dad.jokes
 (
@@ -28,4 +28,3 @@ insert into dad.jokes (joke, punchline) values ('what do you say to your Jieuy f
 
 drop database if exists music cascade;
 create database music;
-

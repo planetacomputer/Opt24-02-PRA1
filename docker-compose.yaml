@@ -1,5 +1,7 @@
 version: '3.8'
 
+name: ex1
+
 services:
   cockroachdb-node1:
     image: cockroachdb/cockroach:v24.3.6
@@ -67,16 +69,12 @@ services:
     networks:
       - cockroachnet
 
-
   init:
     image: cockroachdb/cockroach:v24.3.6
-    depends_on:
-      - cockroachdb-node1
-    entrypoint: ["/bin/sh", "-c", "sleep 35 && cockroach init --host=cockroachdb-node1 --insecure && cockroach sql --insecure --host=cockroachdb-node1 < /docker-entrypoint-initdb.d/init-ex1.sql"]
-    volumes:
-      - ./init-ex1.sql:/docker-entrypoint-initdb.d/init-ex1.sql
+    entrypoint: ["/bin/sh", "-c", "cockroach init --host=cockroachdb-node1 --insecure"]
     networks:
       - cockroachnet
+
 volumes:
   cockroach-data-node1:
   cockroach-data-node2:
